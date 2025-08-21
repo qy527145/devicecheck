@@ -25,20 +25,19 @@ pub enum Commands {
     /// Run server
     Run(BootArgs),
     /// Start server daemon
-    #[cfg(target_family = "unix")]
     Start(BootArgs),
-    /// Restart server daemon
-    #[cfg(target_family = "unix")]
+    /// Restart server daemon  
     Restart(BootArgs),
     /// Stop server daemon
-    #[cfg(target_family = "unix")]
     Stop,
     /// Show the server daemon log
-    #[cfg(target_family = "unix")]
     Log,
     /// Show the server daemon process
     #[cfg(target_family = "unix")]
     PS,
+    /// Show the server daemon process
+    #[cfg(target_family = "windows")]
+    Status,
 }
 
 #[derive(Args, Clone, Debug)]
@@ -69,16 +68,14 @@ fn main() -> Result<()> {
 
     match opt.commands {
         Commands::Run(args) =>  serve::Serve(args).run()?,
-        #[cfg(target_family = "unix")]
         Commands::Start(args) => daemon::start(args)?,
-        #[cfg(target_family = "unix")]
         Commands::Restart(args) => daemon::restart(args)?,
-        #[cfg(target_family = "unix")]
         Commands::Stop => daemon::stop()?,
+        Commands::Log => daemon::log()?,
         #[cfg(target_family = "unix")]
         Commands::PS => daemon::status()?,
-        #[cfg(target_family = "unix")]
-        Commands::Log => daemon::log()?,
+        #[cfg(target_family = "windows")]
+        Commands::Status => daemon::status()?,
     };
 
     Ok(())

@@ -8,7 +8,8 @@ pub fn gen_ca<T: AsRef<Path>>(ca: T, key: T) -> Certificate {
     let cert = CertificateAuthority::gen_ca().expect("generate cert");
     let cert_crt = cert.serialize_pem().unwrap();
 
-    fs::create_dir("ca").unwrap();
+    // Create ca directory if it doesn't exist, ignore error if it already exists
+    let _ = fs::create_dir("ca");
 
     println!("{}", cert_crt);
     if let Err(err) = fs::write(ca, cert_crt) {
